@@ -5,13 +5,11 @@ import './css/chat.css'
 import InfoBar from '../components/InfoBar'
 import Input from '../components/Input'
 import Messages from '../components/Messages'
-import TextContainer from '../components/TextContainer'
 let socket;
 
 const Chat = ({ location }) => {
   const [name, setName] = useState('');
   const [room, setRoom] = useState('');
-  const [users, setUsers] = useState('');
   const [message, setMessage] = useState('');
   const [messages, setMessages] = useState([]);
   const ENDPOINT ='https://k-react-chat-app.herokuapp.com/'
@@ -31,15 +29,15 @@ const Chat = ({ location }) => {
     });
   }, [ENDPOINT, location.search]);
   
-  useEffect(() => {
+
+ useEffect(() => {
     socket.on('message', message => {
-      setMessages(messages => [ ...messages, message ]);
-    });
-    
-    socket.on("roomData", ({ users }) => {
-      setUsers(users);
-    });
-}, []);
+      setMessages([...messages, message])
+    })
+    return () => {
+      socket.off()
+    }
+  }, [messages])
 
   const sendMessage = (event) => {
     event.preventDefault();
@@ -59,7 +57,7 @@ const Chat = ({ location }) => {
         <Messages messages={messages} name={name}></Messages>
         <Input message={message} setMessage={setMessage} sendMessage={sendMessage} />
       </div>
-      <TextContainer users={users}/>
+     
 
     </div>
   );
